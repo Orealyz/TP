@@ -117,7 +117,7 @@ Durée approximative des boucles en millisecondes :
   - et le pong que vous recevez en retour
   - Type 0 = Echo Reply
 
-[voilà mon pcap](https://github.com/Orealyz/TP/blob/main/TP2/TP2%20icmp.pcapng)
+[voilà mon pcap](https://github.com/Orealyz/TP/blob/main/tp2/tp2icmp.pcapng)
 
 
 > Vous trouverez sur [la page Wikipedia de ICMP](https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol) un tableau qui répertorie tous les types ICMP et leur utilité
@@ -254,7 +254,7 @@ Interface : 10.33.17.19 --- 0x12
 
 
 🦈 **PCAP qui contient les trames ARP**
-[ARP](https://github.com/Orealyz/TP/blob/main/TP2/ARP.pcapng)
+[ARP](https://github.com/Orealyz/TP/blob/main/tp2/arp1.pcapng)
 
 > L'échange ARP est constitué de deux trames : un ARP broadcast et un ARP reply.
 
@@ -322,7 +322,7 @@ L'échange DHCP  entre un client et le serveur DHCP consiste en 4 trames : **DOR
 
 - identifiez les 4 trames DHCP lors d'un échange DHCP
   - mettez en évidence les adresses source et destination de chaque trame
-  [pcap2](https://github.com/Orealyz/TP/blob/main/TP2/TP2PCAP.pcapng)                                                          
+  [pcap2](https://github.com/Orealyz/TP/blob/main/tp2/tp2dora.pcapng)                                                          
 - identifiez dans ces 4 trames les informations **1**, **2** et **3** dont on a parlé juste au dessus
 
 🦈 **PCAP qui contient l'échange DORA**
