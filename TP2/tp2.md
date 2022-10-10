@@ -252,12 +252,9 @@ Interface : 10.33.17.19 --- 0x12
 
 🌞 **Wireshark it**
 
-- vous savez maintenant comment forcer un échange ARP : il sufit de vider la table ARP et tenter de contacter quelqu'un, l'échange ARP se fait automatiquement
-- mettez en évidence les deux trames ARP échangées lorsque vous essayez de contacter quelqu'un pour la "première" fois
-  - déterminez, pour les deux trames, les adresses source et destination
-  - déterminez à quoi correspond chacune de ces adresses
 
 🦈 **PCAP qui contient les trames ARP**
+[ARP](https://github.com/Orealyz/TP/blob/main/TP2/ARP.pcapng)
 
 > L'échange ARP est constitué de deux trames : un ARP broadcast et un ARP reply.
 
