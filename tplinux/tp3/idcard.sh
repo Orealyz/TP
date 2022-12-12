@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Simple script for IdCard
+#IdCard
 
 echo "Machine name : $(hostname)"
 echo "OS $(source /etc/os-release ; echo $NAME) and kernel version is $(uname -r)"
