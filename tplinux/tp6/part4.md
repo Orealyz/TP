@@ -1,16 +1,7 @@
 # Module 4 : Monitoring
 
-Dans ce sujet on va installer un outil plutôt clé en main pour mettre en place un monitoring simple de nos machines.
-
-L'outil qu'on va utiliser est [Netdata](https://learn.netdata.cloud/docs/agent/packaging/installer/methods/kickstart).
-
-![Netdata](../pics/netdata.png)
-
 🌞 **Installer Netdata**
 
-- je vous laisse suivre la doc pour le mettre en place [ou ce genre de lien](https://wiki.crowncloud.net/?How_to_Install_Netdata_on_Rocky_Linux_9)
-- vous n'avez PAS besoin d'utiliser le "Netdata Cloud" machin truc. Faites simplement une install locale.
-- installez-le sur `web.tp6.linux` et `db.tp6.linux`.
 ```
 [orealyz@db ~]$ sudo dnf install epel-release -y
 [sudo] password for orealyz:
@@ -67,17 +58,9 @@ tcp   LISTEN 0      4096           [::1]:8125          [::]:*    users:(("netdat
 tcp   LISTEN 0      4096            [::]:19999         [::]:*    users:(("netdata",pid=1661,fd=7))
 ```
 
-
-
-➜ **Une fois en place**, Netdata déploie une interface un Web pour avoir moult stats en temps réel, utilisez une commande `ss` pour repérer sur quel port il tourne.
-
-Utilisez votre navigateur pour visiter l'interface web de Netdata `http://<IP_VM>:<PORT_NETDATA>`.
-
 🌞 **Une fois Netdata installé et fonctionnel, déterminer :**
 
-- l'utilisateur sous lequel tourne le(s) processus Netdata
-- si Netdata écoute sur des ports
-- comment sont consultables les logs de Netdata
+
 ```
 [orealyz@web ~]$ ps -aux | grep netdata
 netdata     1661  0.5  6.1 463936 48348 ?        SNsl 11:14   0:02 /usr/sbin/netdata -P /run/netdata/netdata.pid -D
@@ -108,21 +91,53 @@ Jan 16 11:14:25 web.tb6.linux netdata[1661]: 2023-01-16 11:14:25: netdata INFO  
 Jan 16 11:14:30 web.tb6.linux ebpf.plugin[1887]: Does not have a configuration file inside `/etc/netdata/ebpf.d.conf. It will try to load stock file.
 Jan 16 11:14:30 web.tb6.linux ebpf.plugin[1887]: Cannot read process groups configuration file '/etc/netdata/apps_groups.conf'. Will try '/usr/lib/netdata/conf.d/apps_groups.conf'
 ```
-➜ **Vous ne devez PAS utiliser le "Cloud Netdata"**
 
-- lorsque vous accéder à l'interface web de Netdata :
-  - vous NE DEVEZ PAS être sur une URL `netdata.cloud`
-  - vous DEVEZ visiter l'interface en saisissant l'IP de votre serveur
-- l'interface Web tourne surle port 19999 par défaut
+
 
 🌞 **Configurer Netdata pour qu'il vous envoie des alertes** 
 
-- dans [un salon Discord](https://learn.netdata.cloud/docs/agent/health/notifications/discord) dédié en cas de soucis
+
+```
+[orealyz@db netdata]$ cat /etc/netdata/health_alarm_notify.conf | grep discord
+# sending discord notifications
+# enable/disable sending discord notifications
+# https://support.discordapp.com/hc/en-us/articles/228383668-Intro-to-Webhooks
+DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/1064492175976566824/hPDcaiu7PRbmkeiDOnMkfOFuM1wRU295WNE2EVXMzvPnpLthiSLyw3-s9-g7yTVIkLrh"
+# this discord channel (empty = do not send a notification for unconfigured
+role_recipients_discord[sysadmin]="systems"
+role_recipients_discord[dba]="databases systems"
+role_recipients_discord[webmaster]="marketing development"
+```
+```
+[orealyz@db netdata]$ sudo systemctl restart netdata
+```
 
 🌞 **Vérifier que les alertes fonctionnent**
 
-- en surchargeant volontairement la machine 
-- par exemple, effectuez des *stress tests* de RAM et CPU, ou remplissez le disque volontairement
-- demandez au grand Internet comme on peut "stress" une machine (c'est le terme technique)
+```
+[orealyz@db netdata]$ stress --cpu 1
+stress: info: [15910] dispatching hogs: 1 cpu, 0 io, 0 vm, 0 hdd
+```
 
-![Monitoring](../pics/monit.jpg)
+```
+[orealyz@db netdata]$ cat health.d/cpu.conf | head -n 19
+
+# you can disable an alarm notification by setting the 'to' line to: silent
+
+ template: 10min_cpu_usage
+       on: system.cpu
+    class: Utilization
+     type: System
+component: CPU
+       os: linux
+    hosts: *
+   lookup: average -10m unaligned of user,system,softirq,irq,guest
+    units: %
+    every: 1min
+     warn: $this > 10
+     crit: $this > (($status == $CRITICAL) ? (85) : (95))
+    delay: down 15m multiplier 1.5 max 1h
+     info: average CPU utilization over the last 10 minutes (excluding iowait, nice and steal)
+       to: sysadmin
+
+```
